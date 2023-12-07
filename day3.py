@@ -1,9 +1,25 @@
 # --- Day 3: Gear Ratios ---
+# Level 3
 # Part 1: 519444
-# Part 2:
+# Part 2: 74528807
 
 from typing import List, Tuple
 import re
+from functools import reduce
+
+NON_SYMBOLS = [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    ".",
+]
 
 
 def read_text_file(filepath: str) -> List[str]:
@@ -100,23 +116,20 @@ def is_symbol(mapping: dict, coordinates_list: List[Tuple[int, int]]) -> bool:
     tmp = []
     for coordinates in coordinates_list:
         # tmp.extend(mapping[coordinates])
-        if mapping[coordinates] not in [
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            ".",
-        ]:
+        if mapping[coordinates] not in NON_SYMBOLS:
             # print(tmp)
             return True
     # print(tmp)
     return False
+
+
+def get_coordinates_of_star_symbols(mapping):
+    """List of coordinates for all * symbols"""
+    symbol_coordinates = []
+    for coordinates, val in mapping.items():
+        if val in "*":
+            symbol_coordinates.append(coordinates)
+    return symbol_coordinates
 
 
 if __name__ == "__main__":
@@ -132,15 +145,33 @@ if __name__ == "__main__":
     # convert schematic into idx list
     idx_list = schematic_to_idx(schematic)
 
+    # Q1
     for idx in idx_list:
         coordinates_list = idx_to_coordinates(idx)
         adjacent_coordinates_list = get_adjacent_coordinates(mapping, coordinates_list)
         if is_symbol(mapping, adjacent_coordinates_list):
             sum_of_part_numbers += int(idx[0])
 
-        # print(idx)
-        # print(coordinates_list)
-        # print(adjacent_coordinates_list)
-        # print(sum_of_part_numbers)
-        # print()
+    # Q2
+    symbol_coordinates = get_coordinates_of_star_symbols(mapping)
+    sum_of_gear_products = 0
+    for coordinates in symbol_coordinates:
+        gears = []
+        for idx in idx_list:
+            coordinates_list = idx_to_coordinates(idx)
+            adjacent_coordinates_list = get_adjacent_coordinates(
+                mapping, coordinates_list
+            )
+            if coordinates in adjacent_coordinates_list:
+                gears.append(int(idx[0]))
+
+        if len(gears) > 1:
+            sum_of_gear_products += reduce(lambda x, y: x * y, gears)
+
+    # print(idx)
+    # print(coordinates_list)
+    # print(adjacent_coordinates_list)
+    # print(sum_of_part_numbers)
+    # print()
     print("Q1:", sum_of_part_numbers)
+    print("Q2:", sum_of_gear_products)
