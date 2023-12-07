@@ -1,4 +1,5 @@
 # --- Day 2: Cube Conundrum ---
+# Level 2
 # Part 1: 2551
 # Part 2: 62811
 

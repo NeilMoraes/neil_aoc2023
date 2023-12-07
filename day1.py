@@ -1,4 +1,5 @@
 # --- Day 1: Trebuchet?! ---
+# Level 1
 # Part 1: 55208
 # Part 2: 54578
 
