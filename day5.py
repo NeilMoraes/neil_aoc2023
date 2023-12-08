@@ -1,6 +1,6 @@
 # --- Day 5: If You Give A Seed A Fertilizer ---
-# Level
-# Part 1:
+# Level 2
+# Part 1: 289863851
 # Part 2:
 
 from typing import List, Tuple
@@ -31,91 +31,67 @@ def get_all_digits(text: str) -> List[int]:
     return numbers
 
 
-def flatten(l: List[List]) -> List:
-    """Flattens nested list"""
-    return [y for x in l for y in x]
-
-
 def create_almanac(data) -> dict:
+    """Create almanac from data"""
     almanac = {}
     for val in data:
         almanac[val[0].split(":")[0]] = [int(x) for x in get_all_digits(" ".join(val))]
     return almanac
 
 
-def create_mappings(almanac: dict) -> dict:
-    mapping = {}
-    for key, val in almanac.items():
-        if key == "seeds":
-            mapping[key] = val
-        else:
-            sources = flatten(
-                list(range(start, start + length))
-                for start, length in zip(val[1::3], val[2::3])
-            )
-            destinations = flatten(
-                list(range(start, start + length))
-                for start, length in zip(val[::3], val[2::3])
-            )
+def get_destination(seed: int, mapping: List[int]):
+    """Use mapping to get destination for input seed"""
+    for start, end in zip(range(0, len(mapping), 3), range(3, len(mapping) + 1, 3)):
+        destination, source, length = mapping[start:end]
 
-            mapping[key] = {k: v for k, v in zip(sources, destinations)}
-    return mapping
+        if (seed >= source) & (seed <= source + length - 1):
+            output = seed - source + destination
+            return output
+    return seed
+
+
+# def get_seeds(seeds: List[int]):
+#     """Converts range of seed numbers to list of seeds"""
+#     seed_numbers = []
+#     for start, end in zip(range(0, len(seeds), 2), range(2, len(seeds) + 1, 2)):
+#         start_seed, length = seeds[start:end]
+#         seed_numbers.extend(list(range(start_seed, start_seed + length)))
+#     return set(seed_numbers)
 
 
 if __name__ == "__main__":
     # import data
     data = read_text_file_day5(filepath="data/day5.txt")
     almanac = create_almanac(data)
-    mapping = create_mappings(almanac)
 
     # Q1 - get location for each seed
-    location_list = []
-    for seed in mapping["seeds"]:
-        # seed to soil
-        if seed in mapping["seed-to-soil map"].keys():
-            soil = mapping["seed-to-soil map"][seed]
-        else:
-            soil = seed
-        # soil to fertiliser
-        if soil in mapping["soil-to-fertilizer map"].keys():
-            fert = mapping["soil-to-fertilizer map"][soil]
-        else:
-            fert = soil
+    lowest_location = 10e50
+    for seed in almanac["seeds"]:
+        soil = get_destination(seed, almanac["seed-to-soil map"])
+        fert = get_destination(soil, almanac["soil-to-fertilizer map"])
+        water = get_destination(fert, almanac["fertilizer-to-water map"])
+        light = get_destination(water, almanac["water-to-light map"])
+        temp = get_destination(light, almanac["light-to-temperature map"])
+        humidity = get_destination(temp, almanac["temperature-to-humidity map"])
+        location = get_destination(humidity, almanac["humidity-to-location map"])
+        if location < lowest_location:
+            lowest_location = location
+    print("Q1:", lowest_location)
 
-        # fert to water
-        if fert in mapping["fertilizer-to-water map"].keys():
-            water = mapping["fertilizer-to-water map"][fert]
-        else:
-            water = fert
-
-        # water to light
-        if water in mapping["water-to-light map"].keys():
-            light = mapping["water-to-light map"][water]
-        else:
-            light = water
-
-        # light to temp
-        if light in mapping["light-to-temperature map"].keys():
-            temp = mapping["light-to-temperature map"][light]
-        else:
-            temp = light
-
-        # temp to humidity
-        if temp in mapping["temperature-to-humidity map"].keys():
-            humidity = mapping["temperature-to-humidity map"][temp]
-        else:
-            humidity = temp
-
-        # humidity to location
-        if humidity in mapping["humidity-to-location map"].keys():
-            location = mapping["humidity-to-location map"][humidity]
-        else:
-            location = humidity
-
-        location_list.append(location)
-
-    # Q1
-    print("Q1:", min(location_list))
-    # print(data)
-    # print(almanac)
-    # print(mapping)
+    # Q2 - get location for seed ranges
+    lowest_location = 10e50
+    for start, end in zip(
+        range(0, len(almanac["seeds"]), 2), range(2, len(almanac["seeds"]) + 1, 2)
+    ):
+        start_seed, length = almanac["seeds"][start:end]
+        for seed in range(start_seed, start_seed + length):
+            soil = get_destination(seed, almanac["seed-to-soil map"])
+            fert = get_destination(soil, almanac["soil-to-fertilizer map"])
+            water = get_destination(fert, almanac["fertilizer-to-water map"])
+            light = get_destination(water, almanac["water-to-light map"])
+            temp = get_destination(light, almanac["light-to-temperature map"])
+            humidity = get_destination(temp, almanac["temperature-to-humidity map"])
+            location = get_destination(humidity, almanac["humidity-to-location map"])
+            if location < lowest_location:
+                lowest_location = location
+    print("Q2:", lowest_location)
