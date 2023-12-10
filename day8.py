@@ -1,5 +1,5 @@
 # --- Day 8: Haunted Wasteland ---
-# Level
+# Level 3
 # Part 1: 22411
 # Part 2: 11188774513823
 
