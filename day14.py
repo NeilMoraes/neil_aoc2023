@@ -1,7 +1,7 @@
 # --- Day 14: Parabolic Reflector Dish ---
-# Level
+# Level 3
 # Part 1: 107142
-# Part 2:
+# Part 2: 104815
 
 from typing import List, Tuple
 import re
@@ -11,15 +11,6 @@ def read_text_file(filepath: str) -> List[str]:
     with open(filepath, "r") as f:
         data = [line.strip() for line in f.readlines()]
     return data
-
-
-def create_mapping(schematic: List[str]) -> dict[Tuple[int, int], str]:
-    """Returns a dict which maps coordinates to values"""
-    mapping = {}
-    for i, row in enumerate(schematic):
-        for j, val in enumerate(row):
-            mapping[(j, i)] = val
-    return mapping
 
 
 def roll_left(data):
