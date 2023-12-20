@@ -1,7 +1,7 @@
 # --- Day 5: If You Give A Seed A Fertilizer ---
 # Level 2
 # Part 1: 289863851
-# Part 2:
+# Part 2: -
 
 from typing import List, Tuple
 import re
